@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+        #th{
+            border: solid 3px;
+        }
+    </style>
+
+</head>
+<body>
+
+<!-- 设置一个应用 应用有多个控制器
+     第一个控制器 用于设置需要配置的属性 如颜色
+     剩下的控制器当中 根据第一个控制器当中的属性 做出相应的响应
+
+     第一个控制器 输入框 输入颜色
+
+     后面三个控制器分别控制 背景颜色 字体颜色 边框颜色
+
+     当第一个颜色改变的时候
+
+     后面全部改变
+
+     用angular自定义服务完成
+ -->
+
+<!-- 服务是干什么
+     提供数据的 具体这个数据是干什么 不需要服务去管
+ -->
+
+<div ng-app="wy" ng-controller="wyCtrl">
+    <p id="fr">第一个</p>
+    <p id="se">第二个</p>
+    <p id="th">第三个</p>
+
+    <h1 id="fif" ng-bind="text">我是新的</h1>
+
+    <div ng-controller="anoCtrl">
+        <p id="fo">第四个</p>
+    </div>
+</div>
+
+<script src="angular-1.5.8/angular.min.js"></script>
+
+<script>
+    var mo = angular.module("wy",[]);
+//    服务提供
+    mo.constant("Col","blue");
+
+    mo.factory("Name",function () {
+        return{
+            text:"我是默认的值",
+            changeText:function (text) {
+                this.text = text;
+            }
+        }
+    });
+
+//  查询DOM
+    function $(id) {
+        return document.getElementById(id);
+    }
+//  界面更新
+    function change(Col) {
+        $("fr").style.backgroundColor = Col;
+        $("se").style.color = Col;
+        $("th").style.borderColor = Col;
+        $('fo').innerHTML = Col;
+    }
+    
+    mo.controller("wyCtrl",['Col',"Name","$scope",function (Col,Name,$scope) {
+
+        var flag = true;
+
+        function test() {
+            if(flag)
+            {
+                Col = "red";
+            }else {
+                Col = "blue";
+            }
+            flag = !flag;
+        }
+
+        setInterval(function () {
+            test();
+            change(Col);
+        },3000);
+
+        console.log(Col);
+
+        $scope.text = Name.text;
+
+    }]);
+    
+    mo.controller("anoCtrl",['Col',"Name","$scope",function (col,name,$scope) {
+        console.log(col);
+
+        change(col);
+
+        name.changeText("我是修改后的值");
+
+        console.log(name.text);
+
+        $scope.$parent.text = name.text;
+
+//        $rootScope.text = name.text;
+    }]);
+    
+
+
+
+    
+</script>
+
+</body>
+</html>
